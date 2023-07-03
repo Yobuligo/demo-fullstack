@@ -5,8 +5,18 @@ import { IdProvider } from "../services/IdProvider";
 export class NoteController extends Controller<INote> {
   constructor() {
     super("/notes", [
-      { id: IdProvider.next(), text: "first" },
-      { id: IdProvider.next(), text: "second" },
+      {
+        id: IdProvider.next(),
+        createdAt: new Date(),
+        changedAt: new Date(),
+        text: "first",
+      },
+      {
+        id: IdProvider.next(),
+        createdAt: new Date(),
+        changedAt: new Date(),
+        text: "second",
+      },
     ]);
   }
 }

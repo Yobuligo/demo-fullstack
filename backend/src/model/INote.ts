@@ -1,5 +1,5 @@
-import { IHaveId } from "./types/IHaveId";
+import { IEntity } from "./types/IEntity";
 
-export interface INote extends IHaveId {
+export interface INote extends IEntity {
   text: string;
 }

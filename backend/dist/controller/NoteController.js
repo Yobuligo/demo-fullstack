@@ -6,8 +6,18 @@ const IdProvider_1 = require("../services/IdProvider");
 class NoteController extends Controller_1.Controller {
     constructor() {
         super("/notes", [
-            { id: IdProvider_1.IdProvider.next(), text: "first" },
-            { id: IdProvider_1.IdProvider.next(), text: "second" },
+            {
+                id: IdProvider_1.IdProvider.next(),
+                createdAt: new Date(),
+                changedAt: new Date(),
+                text: "first",
+            },
+            {
+                id: IdProvider_1.IdProvider.next(),
+                createdAt: new Date(),
+                changedAt: new Date(),
+                text: "second",
+            },
         ]);
     }
 }

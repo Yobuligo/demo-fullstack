@@ -7,11 +7,13 @@ class Controller {
     constructor(path, data = []) {
         this.path = path;
         this.data = data;
+        this.version = new Date();
         this.router = (0, express_1.Router)();
         this.delete();
         this.get();
         this.post();
         this.put();
+        this.lastVersion();
     }
     delete() {
         this.router.delete(`${this.path}/:id`, (req, res) => {
@@ -21,21 +23,23 @@ class Controller {
             }
             const item = this.data[index];
             this.data.splice(index, 1);
-            res.status(200).send(item);
+            this.updateVersion();
+            res.status(200).send(this.createEnvelope(item));
         });
     }
     get() {
         this.router.get(this.path, (req, res) => {
-            res.status(200).send(this.data);
+            res.status(200).send(this.createEnvelope(this.data));
         });
     }
     post() {
         this.router.post(this.path, (req, res) => {
             const body = req.body;
             console.log(body);
-            const item = Object.assign({ id: IdProvider_1.IdProvider.next() }, body);
+            const item = Object.assign({ id: IdProvider_1.IdProvider.next(), createdAt: new Date(), changedAt: new Date() }, body);
             this.data.push(item);
-            res.status(200).send(item);
+            this.updateVersion();
+            res.status(200).send(this.createEnvelope(item));
         });
     }
     put() {
@@ -46,14 +50,26 @@ class Controller {
                 return res.status(404).send();
             }
             const body = req.body;
-            const item = Object.assign(Object.assign({}, this.data[index]), body);
+            const item = Object.assign(Object.assign(Object.assign({}, this.data[index]), { changedAt: new Date() }), body);
             this.data[index] = item;
-            res.status(200).send(item);
+            this.updateVersion();
+            res.status(200).send(this.createEnvelope(item));
+        });
+    }
+    lastVersion() {
+        this.router.get(`${this.path}/version`, (req, res) => {
+            res.status(200).send(this.version);
         });
     }
     findIndexByReq(id) {
         console.log(this.data);
         return this.data.findIndex((item) => item.id === id);
+    }
+    updateVersion() {
+        this.version = new Date();
+    }
+    createEnvelope(data) {
+        return { version: this.version, data };
     }
 }
 exports.Controller = Controller;

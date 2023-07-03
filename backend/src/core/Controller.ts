@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { IHaveId } from "../model/types/IHaveId";
+import { IEntity } from "../model/types/IEntity";
+import { IEntityProps } from "../model/types/IEntityProps";
+import { IEnvelope } from "../model/types/IEnvelope";
 import { IdProvider } from "../services/IdProvider";
 
-export abstract class Controller<T extends IHaveId> {
+export abstract class Controller<T extends IEntity> {
+  private version: Date = new Date();
   readonly router = Router();
 
   constructor(private readonly path: string, private readonly data: T[] = []) {
@@ -10,6 +13,7 @@ export abstract class Controller<T extends IHaveId> {
     this.get();
     this.post();
     this.put();
+    this.lastVersion();
   }
 
   private delete() {
@@ -21,23 +25,30 @@ export abstract class Controller<T extends IHaveId> {
 
       const item = this.data[index];
       this.data.splice(index, 1);
-      res.status(200).send(item);
+      this.updateVersion();
+      res.status(200).send(this.createEnvelope(item));
     });
   }
 
   private get() {
     this.router.get(this.path, (req, res) => {
-      res.status(200).send(this.data);
+      res.status(200).send(this.createEnvelope(this.data));
     });
   }
 
   private post() {
     this.router.post(this.path, (req, res) => {
-      const body: Omit<T, "id"> = req.body;
+      const body: IEntityProps<T> = req.body;
       console.log(body);
-      const item: T = { id: IdProvider.next(), ...body } as unknown as T;
+      const item: T = {
+        id: IdProvider.next(),
+        createdAt: new Date(),
+        changedAt: new Date(),
+        ...body,
+      } as unknown as T;
       this.data.push(item);
-      res.status(200).send(item);
+      this.updateVersion();
+      res.status(200).send(this.createEnvelope(item));
     });
   }
 
@@ -49,15 +60,30 @@ export abstract class Controller<T extends IHaveId> {
         return res.status(404).send();
       }
 
-      const body: Omit<T, "id"> = req.body;
-      const item = { ...this.data[index], ...body };
+      const body: IEntityProps<T> = req.body;
+      const item = { ...this.data[index], changedAt: new Date(), ...body };
       this.data[index] = item;
-      res.status(200).send(item);
+      this.updateVersion();
+      res.status(200).send(this.createEnvelope(item));
+    });
+  }
+
+  private lastVersion() {
+    this.router.get(`${this.path}/version`, (req, res) => {
+      res.status(200).send(this.version);
     });
   }
 
   private findIndexByReq(id: string): number {
     console.log(this.data);
     return this.data.findIndex((item) => item.id === id);
+  }
+
+  private updateVersion() {
+    this.version = new Date();
+  }
+
+  private createEnvelope<T>(data: T): IEnvelope<T> {
+    return { version: this.version, data };
   }
 }
