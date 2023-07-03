@@ -1,0 +1,1 @@
+{"version":3,"file":"IdProvider.js","sourceRoot":"","sources":["../../src/services/IdProvider.ts"],"names":[],"mappings":";;;AAAA,MAAM,iBAAiB;IAAvB;QACU,WAAM,GAAG,CAAC,CAAC;IAMrB,CAAC;IAJC,IAAI;QACF,IAAI,CAAC,MAAM,EAAE,CAAC;QACd,OAAO,IAAI,CAAC,MAAM,CAAC,QAAQ,EAAE,CAAC;IAChC,CAAC;CACF;AAEY,QAAA,UAAU,GAAG,IAAI,iBAAiB,EAAE,CAAC"}
