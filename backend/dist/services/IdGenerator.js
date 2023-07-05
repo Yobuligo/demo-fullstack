@@ -11,4 +11,4 @@ class IdGenerator {
     }
 }
 exports.IdGenerator = IdGenerator;
-//# sourceMappingURL=IdProvider.js.map
+//# sourceMappingURL=IdGenerator.js.map

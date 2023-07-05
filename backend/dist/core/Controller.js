@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Controller = void 0;
 const express_1 = require("express");
-const IdProvider_1 = require("../services/IdProvider");
+const ServiceProvider_1 = require("../shared/services/serviceProvider/ServiceProvider");
+const IIdGenerator_1 = require("../services/IIdGenerator");
 class Controller {
     constructor(path, data = []) {
         this.path = path;
@@ -36,7 +37,7 @@ class Controller {
         this.router.post(this.path, (req, res) => {
             const body = req.body;
             console.log(body);
-            const item = Object.assign({ id: IdProvider_1.IdProvider.next(), createdAt: new Date(), changedAt: new Date() }, body);
+            const item = Object.assign({ id: ServiceProvider_1.SP.fetch(IIdGenerator_1.IdGeneratorService).next(), createdAt: new Date(), changedAt: new Date() }, body);
             this.data.push(item);
             this.updateVersion();
             res.status(200).send(item);

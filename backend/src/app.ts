@@ -1,8 +1,12 @@
 import express = require("express");
 import { NoteController } from "./controller/NoteController";
 import { PersonController } from "./controller/PersonController";
+import { IdGeneratorService } from "./services/IIdGenerator";
+import { IdGenerator } from "./services/IdGenerator";
+import { SP } from "./shared/services/serviceProvider/ServiceProvider";
 import bodyParser = require("body-parser");
-import cors = require("cors");
+
+SP.register(IdGeneratorService, IdGenerator);
 
 const app = express();
 

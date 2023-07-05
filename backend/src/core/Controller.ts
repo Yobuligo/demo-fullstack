@@ -2,7 +2,8 @@ import { Router } from "express";
 import { IEntity } from "../shared/types/IEntity";
 import { IEntityProps } from "../shared/types/IEntityProps";
 import { IEnvelope } from "../shared/types/IEnvelope";
-import { IdProvider } from "../services/IdProvider";
+import { SP } from "../shared/services/serviceProvider/ServiceProvider";
+import { IdGeneratorService } from "../services/IIdGenerator";
 
 export abstract class Controller<T extends IEntity> {
   private version: Date = new Date();
@@ -41,7 +42,7 @@ export abstract class Controller<T extends IEntity> {
       const body: IEntityProps<T> = req.body;
       console.log(body);
       const item: T = {
-        id: IdProvider.next(),
+        id: SP.fetch(IdGeneratorService).next(),
         createdAt: new Date(),
         changedAt: new Date(),
         ...body,

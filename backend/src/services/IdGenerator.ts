@@ -1,4 +1,6 @@
-class IdProviderDefault {
+import { IIdGenerator } from "./IIdGenerator";
+
+export class IdGenerator implements IIdGenerator {
   private cursor = 0;
 
   next(): string {
@@ -6,5 +8,3 @@ class IdProviderDefault {
     return this.cursor.toString();
   }
 }
-
-export const IdProvider = new IdProviderDefault();
