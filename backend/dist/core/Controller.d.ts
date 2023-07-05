@@ -1,4 +1,4 @@
-import { IEntity } from "../model/types/IEntity";
+import { IEntity } from "../shared/types/IEntity";
 export declare abstract class Controller<T extends IEntity> {
     private readonly path;
     private readonly data;

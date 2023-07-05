@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { IEntity } from "../model/types/IEntity";
-import { IEntityProps } from "../model/types/IEntityProps";
-import { IEnvelope } from "../model/types/IEnvelope";
+import { IEntity } from "../shared/types/IEntity";
+import { IEntityProps } from "../shared/types/IEntityProps";
+import { IEnvelope } from "../shared/types/IEnvelope";
 import { IdProvider } from "../services/IdProvider";
 
 export abstract class Controller<T extends IEntity> {
@@ -26,7 +26,7 @@ export abstract class Controller<T extends IEntity> {
       const item = this.data[index];
       this.data.splice(index, 1);
       this.updateVersion();
-      res.status(200).send(this.createEnvelope(item));
+      res.status(200).send(item);
     });
   }
 
@@ -48,7 +48,7 @@ export abstract class Controller<T extends IEntity> {
       } as unknown as T;
       this.data.push(item);
       this.updateVersion();
-      res.status(200).send(this.createEnvelope(item));
+      res.status(200).send(item);
     });
   }
 
@@ -64,7 +64,7 @@ export abstract class Controller<T extends IEntity> {
       const item = { ...this.data[index], changedAt: new Date(), ...body };
       this.data[index] = item;
       this.updateVersion();
-      res.status(200).send(this.createEnvelope(item));
+      res.status(200).send(item);
     });
   }
 

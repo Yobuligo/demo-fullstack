@@ -1,5 +1,5 @@
 import { Controller } from "../core/Controller";
-import { INote } from "../model/INote";
+import { INote } from "../shared/model/INote";
 import { IdProvider } from "../services/IdProvider";
 
 export class NoteController extends Controller<INote> {

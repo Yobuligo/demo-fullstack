@@ -24,7 +24,7 @@ class Controller {
             const item = this.data[index];
             this.data.splice(index, 1);
             this.updateVersion();
-            res.status(200).send(this.createEnvelope(item));
+            res.status(200).send(item);
         });
     }
     get() {
@@ -39,7 +39,7 @@ class Controller {
             const item = Object.assign({ id: IdProvider_1.IdProvider.next(), createdAt: new Date(), changedAt: new Date() }, body);
             this.data.push(item);
             this.updateVersion();
-            res.status(200).send(this.createEnvelope(item));
+            res.status(200).send(item);
         });
     }
     put() {
@@ -53,7 +53,7 @@ class Controller {
             const item = Object.assign(Object.assign(Object.assign({}, this.data[index]), { changedAt: new Date() }), body);
             this.data[index] = item;
             this.updateVersion();
-            res.status(200).send(this.createEnvelope(item));
+            res.status(200).send(item);
         });
     }
     lastVersion() {
