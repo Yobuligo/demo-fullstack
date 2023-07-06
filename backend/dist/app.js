@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
-const NoteController_1 = require("./controller/NoteController");
-const PersonController_1 = require("./controller/PersonController");
 const IIdGenerator_1 = require("./services/IIdGenerator");
 const IdGenerator_1 = require("./services/IdGenerator");
 const ServiceProvider_1 = require("./shared/services/serviceProvider/ServiceProvider");
 const bodyParser = require("body-parser");
+const PersonController_1 = require("./models/persons/PersonController");
+const NoteController_1 = require("./models/notes/NoteController");
 ServiceProvider_1.SP.register(IIdGenerator_1.IdGeneratorService, IdGenerator_1.IdGenerator);
 const app = express();
 app.use((req, res, next) => {

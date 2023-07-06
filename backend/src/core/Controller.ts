@@ -1,15 +1,17 @@
 import { Router } from "express";
+import { IRepository } from "../services/IRepository";
 import { IEntity } from "../shared/types/IEntity";
-import { IEntityProps } from "../shared/types/IEntityProps";
+import { IEntityDetails } from "../shared/types/IEntityDetails";
 import { IEnvelope } from "../shared/types/IEnvelope";
-import { SP } from "../shared/services/serviceProvider/ServiceProvider";
-import { IdGeneratorService } from "../services/IIdGenerator";
 
 export abstract class Controller<T extends IEntity> {
   private version: Date = new Date();
   readonly router = Router();
 
-  constructor(private readonly path: string, private readonly data: T[] = []) {
+  constructor(
+    private readonly path: string,
+    private readonly repository: IRepository<T>
+  ) {
     this.delete();
     this.get();
     this.post();
@@ -18,52 +20,36 @@ export abstract class Controller<T extends IEntity> {
   }
 
   private delete() {
-    this.router.delete(`${this.path}/:id`, (req, res) => {
-      const index = this.findIndexByReq(req.params.id);
-      if (index === -1) {
-        return res.status(404).send();
-      }
-
-      const item = this.data[index];
-      this.data.splice(index, 1);
+    this.router.delete(`${this.path}/:id`, async (req, res) => {
+      const success = await this.repository.deleteById(parseInt(req.params.id));
       this.updateVersion();
-      res.status(200).send(item);
+      res.status(200).send(success);
     });
   }
 
   private get() {
-    this.router.get(this.path, (req, res) => {
-      res.status(200).send(this.createEnvelope(this.data));
+    this.router.get(this.path, async (req, res) => {
+      const data = await this.repository.findAll();
+      res.status(200).send(this.createEnvelope(data));
     });
   }
 
   private post() {
-    this.router.post(this.path, (req, res) => {
-      const body: IEntityProps<T> = req.body;
-      console.log(body);
-      const item: T = {
-        id: SP.fetch(IdGeneratorService).next(),
-        createdAt: new Date(),
-        changedAt: new Date(),
-        ...body,
-      } as unknown as T;
-      this.data.push(item);
+    this.router.post(this.path, async (req, res) => {
+      const body: IEntityDetails<T> = req.body;
+      const item = await this.repository.add(body);
       this.updateVersion();
       res.status(200).send(item);
     });
   }
 
   private put() {
-    this.router.put(`${this.path}/:id`, (req, res) => {
-      console.log("Put was called");
-      const index = this.findIndexByReq(req.params.id);
-      if (index === -1) {
-        return res.status(404).send();
-      }
-
-      const body: IEntityProps<T> = req.body;
-      const item = { ...this.data[index], changedAt: new Date(), ...body };
-      this.data[index] = item;
+    this.router.put(`${this.path}/:id`, async (req, res) => {
+      const body: IEntityDetails<T> = req.body;
+      const item = await this.repository.updateById(
+        parseInt(req.params.id),
+        body
+      );
       this.updateVersion();
       res.status(200).send(item);
     });
@@ -73,11 +59,6 @@ export abstract class Controller<T extends IEntity> {
     this.router.get(`${this.path}/version`, (req, res) => {
       res.status(200).send(this.version);
     });
-  }
-
-  private findIndexByReq(id: string): number {
-    console.log(this.data);
-    return this.data.findIndex((item) => item.id === id);
   }
 
   private updateVersion() {
