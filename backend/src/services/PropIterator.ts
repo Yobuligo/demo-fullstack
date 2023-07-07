@@ -3,6 +3,7 @@ import { IPropIterator } from "./IPropIterator";
 
 class PropIterator<T> implements IPropIterator<T> {
   private separator = "";
+
   constructor(private readonly object: T) {}
 
   setSeparator(separator: string): IPropIterator<T> {
@@ -15,11 +16,11 @@ class PropIterator<T> implements IPropIterator<T> {
     let propCount = 0;
     for (const key in this.object) {
       propCount++;
-      if (this.separator.length > 0) {
+      if (code.length > 0 && this.separator.length > 0) {
         code += this.separator;
       }
       const newCode = block(
-        { name: key, value: this.object[key], count: propCount },
+        { name: key, value: this.object[key], index: propCount },
         code
       );
       if (newCode) {

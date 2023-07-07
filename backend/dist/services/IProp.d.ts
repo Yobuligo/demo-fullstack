@@ -1,5 +1,5 @@
 export interface IProp<T> {
-    count: number;
+    index: number;
     name: string;
     value: T[keyof T];
 }

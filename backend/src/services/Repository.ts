@@ -2,6 +2,7 @@ import { pool } from "../db/dbConnection";
 import { IEntity } from "../shared/types/IEntity";
 import { IEntityDetails } from "../shared/types/IEntityDetails";
 import { IRepository } from "./IRepository";
+import { createPropIterator } from "./PropIterator";
 
 export abstract class Repository<T extends IEntity> implements IRepository<T> {
   constructor(private readonly table: string) {}
@@ -117,30 +118,16 @@ export abstract class Repository<T extends IEntity> implements IRepository<T> {
   }
 
   private getDataObjectPlaceholders(dataObject: IEntityDetails<T>): string {
-    let code = "";
-    let count = 0;
-    for (const key in dataObject) {
-      if (key === "id") {
-        continue;
-      }
-      count++;
-      if (code.length > 0) {
-        code += `,`;
-      }
-      code += `$${count}`;
-    }
-    return code;
+    return createPropIterator(dataObject)
+      .setSeparator(",")
+      .forEach((prop, code) => (code += `$${prop.index}`));
   }
 
   private getDataObjectValues(dataObject: IEntityDetails<T>): T[keyof T][] {
-    let values = [];
-    for (const key in dataObject) {
-      if (key === "id") {
-        continue;
-      }
-
-      values.push((dataObject as any)[key]);
-    }
+    let values: T[keyof T][] = [];
+    createPropIterator(dataObject).forEach((prop) =>
+      values.push(prop.value as T[keyof T])
+    );
     return values;
   }
 }

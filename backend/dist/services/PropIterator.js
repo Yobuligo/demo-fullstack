@@ -15,10 +15,10 @@ class PropIterator {
         let propCount = 0;
         for (const key in this.object) {
             propCount++;
-            if (this.separator.length > 0) {
+            if (code.length > 0 && this.separator.length > 0) {
                 code += this.separator;
             }
-            const newCode = block({ name: key, value: this.object[key], count: propCount }, code);
+            const newCode = block({ name: key, value: this.object[key], index: propCount }, code);
             if (newCode) {
                 code += newCode;
             }

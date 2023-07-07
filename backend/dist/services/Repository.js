@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Repository = void 0;
 const dbConnection_1 = require("../db/dbConnection");
+const PropIterator_1 = require("./PropIterator");
 class Repository {
     constructor(table) {
         this.table = table;
@@ -108,28 +109,13 @@ class Repository {
         return code;
     }
     getDataObjectPlaceholders(dataObject) {
-        let code = "";
-        let count = 0;
-        for (const key in dataObject) {
-            if (key === "id") {
-                continue;
-            }
-            count++;
-            if (code.length > 0) {
-                code += `,`;
-            }
-            code += `$${count}`;
-        }
-        return code;
+        return (0, PropIterator_1.createPropIterator)(dataObject)
+            .setSeparator(",")
+            .forEach((prop, code) => (code += `$${prop.index}`));
     }
     getDataObjectValues(dataObject) {
         let values = [];
-        for (const key in dataObject) {
-            if (key === "id") {
-                continue;
-            }
-            values.push(dataObject[key]);
-        }
+        (0, PropIterator_1.createPropIterator)(dataObject).forEach((prop) => values.push(prop.value));
         return values;
     }
 }
